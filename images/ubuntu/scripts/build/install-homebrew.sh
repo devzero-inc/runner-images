@@ -9,6 +9,9 @@
 source $HELPER_SCRIPTS/etc-environment.sh
 source $HELPER_SCRIPTS/install.sh
 
+# DEVZERO START - touch /.dockerenv to allow brew to continue even as root
+touch /.dockerenv
+
 # Install the Homebrew on Linux
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
@@ -29,3 +32,6 @@ if [[ -e $gfortran ]]; then
 fi
 
 invoke_tests "Tools" "Homebrew"
+
+# DEVZERO END - remove /.dockerenv
+rm -f /.dockerenv
