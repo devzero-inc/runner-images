@@ -20,8 +20,6 @@ COPY images/ubuntu/scripts/docs-gen ${IMAGE_FOLDER}/docs-gen/
 COPY helpers/software-report-base ${IMAGE_FOLDER}/docs-gen/
 COPY images/ubuntu/toolsets/toolset-2404.json ${INSTALLER_SCRIPT_FOLDER}/toolset.json
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 # ---------------------------------- START: CUSTOM ----------------------------------
 RUN apt-get update -y \
     && apt-get install -y software-properties-common \
@@ -56,7 +54,7 @@ RUN apt-get update -y \
 
 RUN mkdir -p /etc/cloud/templates/
 
-ARG AGENT_TOOLSDIRECTORY=/opt/hostedtoolcache
+ENV AGENT_TOOLSDIRECTORY=/opt/hostedtoolcache
 
 ## issue not fixed upstream https://github.com/actions/runner-images/issues/11028
 ## there's no netcat in 24.04 but the script tries to install that
@@ -89,6 +87,13 @@ RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-apt-vital.sh \
 # Install PowerShell modules
 RUN pwsh -f ${INSTALLER_SCRIPT_FOLDER}/Install-PowerShellModules.ps1 \
     && pwsh -f ${INSTALLER_SCRIPT_FOLDER}/Install-PowerShellAzModules.ps1
+
+## docker daemon won't/can't be running, hence we can't pull images - used in install-docker.sh
+ENV DOCKERHUB_PULL_IMAGES=no
+## needed for install-pipx-packages.sh
+ENV PATH="$PATH:/opt/pipx_bin:/root/.local/bin"
+## needed for install-homebrew.sh
+ENV NONINTERACTIVE=1
 
 # Install all tools
 RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-actions-cache.sh && \
@@ -139,35 +144,26 @@ RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-actions-cache.sh && \
     bash ${INSTALLER_SCRIPT_FOLDER}/install-android-sdk.sh && \
     bash ${INSTALLER_SCRIPT_FOLDER}/install-pypy.sh && \
     bash ${INSTALLER_SCRIPT_FOLDER}/install-python.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-zstd.sh
+    bash ${INSTALLER_SCRIPT_FOLDER}/install-zstd.sh && \
+    bash ${INSTALLER_SCRIPT_FOLDER}/install-docker.sh && \
 
-ARG DOCKERHUB_PULL_IMAGES=no
-RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-docker.sh
+    # Configure toolset
+    pwsh -f ${INSTALLER_SCRIPT_FOLDER}/Install-Toolset.ps1  && \
+    pwsh -f ${INSTALLER_SCRIPT_FOLDER}/Configure-Toolset.ps1 && \
 
-# Configure toolset
-RUN pwsh -f ${INSTALLER_SCRIPT_FOLDER}/Install-Toolset.ps1 \
-    && pwsh -f ${INSTALLER_SCRIPT_FOLDER}/Configure-Toolset.ps1
+    # Install additional packages
+    bash ${INSTALLER_SCRIPT_FOLDER}/install-pipx-packages.sh && \
+    bash ${INSTALLER_SCRIPT_FOLDER}/install-homebrew.sh && \
+    bash ${INSTALLER_SCRIPT_FOLDER}/configure-snap.sh && \
 
-# Install additional packages (env vars for pipx and brew)
-ENV PATH="$PATH:/opt/pipx_bin:/root/.local/bin"
-ENV NONINTERACTIVE=1
-RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-pipx-packages.sh \
-    && bash ${INSTALLER_SCRIPT_FOLDER}/install-homebrew.sh \
-    && bash ${INSTALLER_SCRIPT_FOLDER}/configure-snap.sh
+    # Cleanup and system configuration
+    bash ${INSTALLER_SCRIPT_FOLDER}/cleanup.sh && \
+    bash ${INSTALLER_SCRIPT_FOLDER}/configure-system.sh && \
 
-# Cleanup and system configuration
-RUN bash ${INSTALLER_SCRIPT_FOLDER}/cleanup.sh \
-    && bash ${INSTALLER_SCRIPT_FOLDER}/configure-system.sh
+    # Final cleanup
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Generate reports
 # RUN pwsh -File ${IMAGE_FOLDER}/SoftwareReport/Generate-SoftwareReport.ps1 -OutputDirectory ${IMAGE_FOLDER} \
 #     && pwsh -File ${IMAGE_FOLDER}/tests/RunAll-Tests.ps1 -OutputDirectory ${IMAGE_FOLDER}
-
-# Configure machine instance
-# COPY images/ubuntu/assets/ubuntu2204.conf /tmp/
-# RUN mkdir -p /etc/vsts \
-#     && cp /tmp/ubuntu2204.conf /etc/vsts/machine_instance.conf
-
-# Final cleanup
-RUN apt-get clean \
-    && rm -rf /var/lib/apt/lists/*

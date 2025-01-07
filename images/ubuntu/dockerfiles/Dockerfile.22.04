@@ -21,10 +21,14 @@ COPY images/ubuntu/scripts/docs-gen ${IMAGE_FOLDER}/docs-gen/
 COPY helpers/software-report-base ${IMAGE_FOLDER}/docs-gen/
 COPY images/ubuntu/toolsets/toolset-2204.json ${INSTALLER_SCRIPT_FOLDER}/toolset.json
 
+# Configure machine instance
+COPY images/ubuntu/assets/ubuntu2204.conf /tmp/
+RUN mkdir -p /etc/vsts \
+    && cp /tmp/ubuntu2204.conf /etc/vsts/machine_instance.conf
+
 # ---------------------------------- START: CUSTOM ----------------------------------
 ## add all the systemd etc bits to make things work well in the dzboot world 
 ## TODO: add dzboot at the end based on existing runner image 
-ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -y \
     && apt-get install -y software-properties-common \
     && add-apt-repository -y ppa:git-core/ppa \
@@ -63,7 +67,7 @@ RUN mkdir -p /etc/cloud/templates/
 ### how the scripts are executed, the env var might not be set as we expect,
 ### or might not persist between layers (this is being a bit defensive to get 
 ### it to work reliably)
-ARG AGENT_TOOLSDIRECTORY=/opt/hostedtoolcache
+ENV AGENT_TOOLSDIRECTORY=/opt/hostedtoolcache
 # ---------------------------------- END: CUSTOM ---------------------------------- 
 
 # Configure initial setup
@@ -87,6 +91,11 @@ RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-apt-vital.sh \
 # Install PowerShell modules
 RUN pwsh -f ${INSTALLER_SCRIPT_FOLDER}/Install-PowerShellModules.ps1 \
     && pwsh -f ${INSTALLER_SCRIPT_FOLDER}/Install-PowerShellAzModules.ps1
+
+## docker daemon won't/can't be running, hence we can't pull images - used in install-docker.sh
+ENV DOCKERHUB_PULL_IMAGES=no
+## needed for install-pipx-packages.sh
+ENV PATH="$PATH:/opt/pipx_bin:/root/.local/bin"
 
 # Install all tools
 RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-actions-cache.sh && \
@@ -148,36 +157,24 @@ RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-actions-cache.sh && \
     bash ${INSTALLER_SCRIPT_FOLDER}/install-android-sdk.sh && \
     bash ${INSTALLER_SCRIPT_FOLDER}/install-pypy.sh && \
     bash ${INSTALLER_SCRIPT_FOLDER}/install-python.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-zstd.sh
+    bash ${INSTALLER_SCRIPT_FOLDER}/install-zstd.sh && \
+    bash ${INSTALLER_SCRIPT_FOLDER}/install-docker.sh && \
+    pwsh -f ${INSTALLER_SCRIPT_FOLDER}/Install-Toolset.ps1 && \
+    pwsh -f ${INSTALLER_SCRIPT_FOLDER}/Configure-Toolset.ps1  && \
 
-## docker daemon won't/can't be running, hence we can't pull images
-ARG DOCKERHUB_PULL_IMAGES=no
-RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-docker.sh
+    # Install additional packages
+    bash ${INSTALLER_SCRIPT_FOLDER}/install-pipx-packages.sh && \
+    bash ${INSTALLER_SCRIPT_FOLDER}/install-homebrew.sh && \
+    bash ${INSTALLER_SCRIPT_FOLDER}/configure-snap.sh && \
 
-# Configure toolset
-RUN pwsh -f ${INSTALLER_SCRIPT_FOLDER}/Install-Toolset.ps1 \
-    && pwsh -f ${INSTALLER_SCRIPT_FOLDER}/Configure-Toolset.ps1
+    # Cleanup and system configuration
+    bash ${INSTALLER_SCRIPT_FOLDER}/cleanup.sh && \
+    bash ${INSTALLER_SCRIPT_FOLDER}/configure-system.sh && \
 
-# Install additional packages
-ENV PATH="$PATH:/opt/pipx_bin:/root/.local/bin"
-RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-pipx-packages.sh \
-    && bash ${INSTALLER_SCRIPT_FOLDER}/install-homebrew.sh \
-    && bash ${INSTALLER_SCRIPT_FOLDER}/configure-snap.sh
-
-# Cleanup and system configuration
-RUN bash ${INSTALLER_SCRIPT_FOLDER}/cleanup.sh \
-    && bash ${INSTALLER_SCRIPT_FOLDER}/configure-system.sh
+    # Final cleanup
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Generate reports
 # RUN pwsh -File ${IMAGE_FOLDER}/SoftwareReport/Generate-SoftwareReport.ps1 -OutputDirectory ${IMAGE_FOLDER} \
 #     && pwsh -File ${IMAGE_FOLDER}/tests/RunAll-Tests.ps1 -OutputDirectory ${IMAGE_FOLDER}
-
-# Configure machine instance
-COPY images/ubuntu/assets/ubuntu2204.conf /tmp/
-RUN mkdir -p /etc/vsts \
-    && cp /tmp/ubuntu2204.conf /etc/vsts/machine_instance.conf
-
-# Final cleanup
-RUN apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
