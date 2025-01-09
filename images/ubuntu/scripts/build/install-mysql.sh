@@ -28,6 +28,7 @@ systemctl is-active --quiet mysql.service && systemctl stop mysql.service
 systemctl disable mysql.service
 
 # DEVZERO START - disabling as a hack cuz docker image and can't run things
-sudo systemctl enable mysql.service
+# TODO (enable): mysql is explicitly disabled since starting the service is causing the Kata VM to panic
+# sudo systemctl enable mysql.service
 # DEVZERO STOP
 # invoke_tests "Databases" "MySQL"
