@@ -53,6 +53,8 @@ jobs:
            type=registry,ref=devzeroinc/gha-runner-image-ubuntu:${{ matrix.version }}-cache
          tags: |
            devzeroinc/gha-runner-image-ubuntu:${{ matrix.version }}-pr-${{ github.event.pull_request.number }}
+         outputs: |
+           type=registry,oci-mediatypes=true,compression=estargz,force-compression=true
 
      - name: Build and push devel
        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.release_type == 'devel')
@@ -68,6 +70,8 @@ jobs:
          tags: |
            devzeroinc/gha-runner-image-ubuntu:${{ matrix.version }}-devel
            devzeroinc/gha-runner-image-ubuntu:${{ matrix.version }}-devel-${{ steps.date.outputs.date }}
+         outputs: |
+           type=registry,oci-mediatypes=true,compression=estargz,force-compression=true
 
      - name: Create devel release
        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.release_type == 'devel')
@@ -91,6 +95,8 @@ jobs:
          tags: |
            devzeroinc/gha-runner-image-ubuntu:${{ matrix.version }}
            devzeroinc/gha-runner-image-ubuntu:${{ matrix.version }}-latest
+         outputs: |
+           type=registry,oci-mediatypes=true,compression=estargz,force-compression=true
 
      - name: Create latest release
        if: github.event_name == 'workflow_dispatch' && github.event.inputs.release_type == 'latest'
