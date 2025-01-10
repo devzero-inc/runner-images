@@ -110,7 +110,3 @@ jobs:
            Docker images available at:
            - devzeroinc/gha-runner-image-ubuntu:${{ matrix.version }}
            - devzeroinc/gha-runner-image-ubuntu:${{ matrix.version }}-latest
-     - name: Setup tmate session
-       uses: mxschmitt/action-tmate@v3
-       if: ${{ failure() }}
-       timeout-minutes: 15
