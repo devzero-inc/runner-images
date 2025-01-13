@@ -74,19 +74,19 @@ RUN bash ${INSTALLER_SCRIPT_FOLDER}/configure-apt-mock.sh \
     && bash ${INSTALLER_SCRIPT_FOLDER}/configure-limits.sh
 
 # Move directories
-RUN mv ${IMAGE_FOLDER}/docs-gen ${IMAGE_FOLDER}/SoftwareReport && \
-    mv ${IMAGE_FOLDER}/post-gen ${IMAGE_FOLDER}/post-generation && \
+RUN mv ${IMAGE_FOLDER}/docs-gen ${IMAGE_FOLDER}/SoftwareReport \
+    && mv ${IMAGE_FOLDER}/post-gen ${IMAGE_FOLDER}/post-generation
 
-    # Configure environment
-    bash ${INSTALLER_SCRIPT_FOLDER}/configure-environment.sh && \
+# Configure environment
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/configure-environment.sh
 
-    # Install core packages
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-apt-vital.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-powershell.sh && \
+# Install core packages
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-apt-vital.sh \
+    && bash ${INSTALLER_SCRIPT_FOLDER}/install-powershell.sh
 
-    # Install PowerShell modules
-    pwsh -f ${INSTALLER_SCRIPT_FOLDER}/Install-PowerShellModules.ps1 && \
-    pwsh -f ${INSTALLER_SCRIPT_FOLDER}/Install-PowerShellAzModules.ps1
+# Install PowerShell modules
+RUN pwsh -f ${INSTALLER_SCRIPT_FOLDER}/Install-PowerShellModules.ps1 \
+    && pwsh -f ${INSTALLER_SCRIPT_FOLDER}/Install-PowerShellAzModules.ps1
 
 ## docker daemon won't/can't be running, hence we can't pull images - used in install-docker.sh
 ENV DOCKERHUB_PULL_IMAGES=no
@@ -96,35 +96,35 @@ ENV PATH="$PATH:/opt/pipx_bin:/root/.local/bin"
 ENV NONINTERACTIVE=1
 
 # Install all tools
-RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-apt-common.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-azcopy.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-azure-cli.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-azure-devops-cli.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-bicep.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-aws-tools.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-clang.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-cmake.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-container-tools.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-gcc-compilers.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-git.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-git-lfs.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-github-cli.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-google-cloud-cli.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-kubernetes-tools.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-nvm.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-nodejs.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-bazel.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-pulumi.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-packer.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/configure-dpkg.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-yq.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-pypy.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-python.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-zstd.sh && \
-    bash ${INSTALLER_SCRIPT_FOLDER}/install-docker.sh && \
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-apt-common.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-azcopy.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-azure-cli.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-azure-devops-cli.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-bicep.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-aws-tools.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-clang.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-cmake.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-container-tools.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-gcc-compilers.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-git.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-git-lfs.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-github-cli.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-google-cloud-cli.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-kubernetes-tools.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-nvm.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-nodejs.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-bazel.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-pulumi.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-packer.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/configure-dpkg.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-yq.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-pypy.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-python.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-zstd.sh
+RUN bash ${INSTALLER_SCRIPT_FOLDER}/install-docker.sh
 
     # Configure toolset to only keep the python and pypy sections and drop everything else
-    jq '.toolcache = [.toolcache[] | select(.name == "Python" or .name == "PyPy" or .name == "go", or .name == "node")]' "${INSTALLER_SCRIPT_FOLDER}/toolset.json" > "${INSTALLER_SCRIPT_FOLDER}/toolset.json.tmp" && \
+RUN jq --arg tools '"PyPy","Python","go","node"' '.toolcache = [.toolcache[] | select(.name as $n | ($tools | split(",")) | contains([$n]))]' "${INSTALLER_SCRIPT_FOLDER}/toolset.json" > "${INSTALLER_SCRIPT_FOLDER}/toolset.json.tmp" && \
     mv "${INSTALLER_SCRIPT_FOLDER}/toolset.json.tmp" "${INSTALLER_SCRIPT_FOLDER}/toolset.json" && \
     pwsh -f ${INSTALLER_SCRIPT_FOLDER}/Install-Toolset.ps1 && \
     pwsh -f ${INSTALLER_SCRIPT_FOLDER}/Configure-Toolset.ps1 && \
