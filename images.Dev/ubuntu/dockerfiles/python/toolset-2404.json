@@ -1,0 +1,145 @@
+{
+  "toolcache": [
+    {
+      "name": "Python",
+      "url": "https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json",
+      "platform": "linux",
+      "platform_version": "24.04",
+      "arch": "x64",
+      "versions": [
+        "3.9.*",
+        "3.10.*",
+        "3.11.*",
+        "3.12.*"
+      ]
+    },
+    {
+      "name": "PyPy",
+      "arch": "x64",
+      "platform": "linux",
+      "versions": [
+        "3.9",
+        "3.10"
+      ]
+    }
+  ],
+  "apt": {
+    "vital_packages": [
+      "bzip2",
+      "curl",
+      "g++",
+      "gcc",
+      "make",
+      "jq",
+      "tar",
+      "unzip",
+      "wget"
+    ],
+    "common_packages": [
+      "autoconf",
+      "automake",
+      "dbus",
+      "dnsutils",
+      "dpkg",
+      "dpkg-dev",
+      "fakeroot",
+      "fonts-noto-color-emoji",
+      "gnupg2",
+      "iproute2",
+      "iputils-ping",
+      "libyaml-dev",
+      "libtool",
+      "libssl-dev",
+      "libsqlite3-dev",
+      "locales",
+      "mercurial",
+      "openssh-client",
+      "p7zip-rar",
+      "pkg-config",
+      "python-is-python3",
+      "rpm",
+      "texinfo",
+      "tk",
+      "tree",
+      "tzdata",
+      "upx",
+      "xvfb",
+      "xz-utils",
+      "zsync"
+    ],
+    "cmd_packages": [
+      "acl",
+      "aria2",
+      "binutils",
+      "bison",
+      "brotli",
+      "coreutils",
+      "file",
+      "findutils",
+      "flex",
+      "ftp",
+      "haveged",
+      "lz4",
+      "m4",
+      "mediainfo",
+      "netcat",
+      "net-tools",
+      "p7zip-full",
+      "parallel",
+      "patchelf",
+      "pigz",
+      "pollinate",
+      "rsync",
+      "shellcheck",
+      "sphinxsearch",
+      "sqlite3",
+      "ssh",
+      "sshpass",
+      "sudo",
+      "systemd-coredump",
+      "swig",
+      "telnet",
+      "time",
+      "zip"
+    ]
+  },
+  "docker": {
+    "images": [],
+    "components": [
+      {
+        "package": "containerd.io",
+        "version": "latest"
+      },
+      {
+        "package": "docker-ce-cli",
+        "version": "26.1.3"
+      },
+      {
+        "package": "docker-ce",
+        "version": "26.1.3"
+      }
+    ],
+    "plugins": [
+      {
+        "plugin": "buildx",
+        "version": "latest",
+        "asset": "linux-amd64"
+      },
+      {
+        "plugin": "compose",
+        "version": "2.27.1",
+        "asset": "linux-x86_64"
+      }
+    ]
+  },
+  "pipx": [
+    {
+      "package": "yamllint",
+      "cmd": "yamllint"
+    },
+    {
+      "package": "ansible-core",
+      "cmd": "ansible"
+    }
+  ]
+}
