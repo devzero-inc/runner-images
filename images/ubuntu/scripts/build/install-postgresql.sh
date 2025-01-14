@@ -35,6 +35,6 @@ rm /usr/share/keyrings/postgresql.gpg
 echo "postgresql $REPO_URL" >> $HELPER_SCRIPTS/apt-sources.txt
 
 # DEVZERO START - disabling as a hack cuz docker image and can't run things
-sudo systemctl enable postgresql.service
+# sudo systemctl enable postgresql.service
 # DEVZERO STOP
 # invoke_tests "Databases" "PostgreSQL"
