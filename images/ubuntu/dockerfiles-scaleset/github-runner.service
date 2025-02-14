@@ -1,0 +1,15 @@
+[Unit]
+Description=GitHub Runner service
+After=network.target
+
+[Service]
+PassEnvironment=ACTIONS_RUNNER_INPUT_JITCONFIG 
+ExecStart=sh -c '/runner/bin/runsvc.sh && sudo shutdown now'
+User=runner
+WorkingDirectory=/runner
+KillMode=process
+KillSignal=SIGTERM
+TimeoutStopSec=5min
+
+[Install]
+WantedBy=multi-user.target
