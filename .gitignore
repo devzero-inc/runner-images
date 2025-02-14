@@ -397,3 +397,6 @@ launch.json
 
 # Ignore dynamic template
 images/*/*-temp.json
+
+# dzcmd untarred for images/ubuntu/dockerfiles-scaleset
+images/ubuntu/dockerfiles-scaleset/dzcmd
