@@ -44,6 +44,9 @@ RUN apt-get update -y \
 RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && \
     apt-get install -y --no-install-recommends git-lfs
 
+
+RUN apt install -y docker.io
+
 RUN adduser --disabled-password --gecos "" --uid $RUNNER_USER_UID runner \
     && usermod -aG sudo runner \
     && echo "%sudo   ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers \
