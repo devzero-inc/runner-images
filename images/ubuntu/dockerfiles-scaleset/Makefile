@@ -26,8 +26,16 @@ define save_image
 endef
 
 define push_image
+	# Create a unique build identifier
+	$(eval BUILD_ID := $(shell git rev-parse --short HEAD)-$(shell date -u +"%Y%m%d"))
+
+	# Push with the feature/version tag
 	docker tag $(1):$(TAG) $(DOCKER_REGISTRY)/$(1):$(2)
 	docker push $(DOCKER_REGISTRY)/$(1):$(2)
+
+	# Push with the unique build ID tag
+	docker tag $(1):$(TAG) $(DOCKER_REGISTRY)/$(1):$(2)-$(BUILD_ID)
+	docker push $(DOCKER_REGISTRY)/$(1):$(2)-$(BUILD_ID)
 endef
 
 .PHONY: build-ubuntu build-fedora build-ubuntu-latest
