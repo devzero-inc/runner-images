@@ -23,7 +23,19 @@ jobs:
   build:
     strategy:
       matrix:
-        base_image: [22.04-devel, 24.04-devel]
+        build_opts:
+          - base_image: devzeroinc/gha-runner-image-ubuntu
+            base_tag: 22.04-devel
+            build_rule_name: build-ubuntu
+            push_rule_name: push-ubuntu
+          - base_image: devzeroinc/gha-runner-image-ubuntu
+            base_tag: 24.04-devel
+            build_rule_name: build-ubuntu
+            push_rule_name: push-ubuntu
+          - base_image: amazonlinux
+            base_tag: 2023
+            build_rule_name: build-fedora
+            push_rule_name: push-fedora
     runs-on: ubuntu-xl
     steps:
       - name: Checkout code
@@ -47,9 +59,9 @@ jobs:
         shell: bash
         run: |
           cd images/ubuntu/dockerfiles-scaleset
-          TAG=${{ matrix.base_image }} BASE_IMAGE=devzeroinc/gha-runner-image-ubuntu:${{ matrix.base_image}}
+          TAG=${{ matrix.build_opts.base_tag }} BASE_IMAGE=${{ matrix.build_opts.base_image }}:${{ matrix.build_opts.base_tag}}
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            make build-image
+            make ${{ matrix.build_opts.build_rule_name }}
           else
-            make push
+            make ${{ matrix.build_opts.push_rule_name }}
           fi
