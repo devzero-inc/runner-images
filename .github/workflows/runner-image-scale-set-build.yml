@@ -25,17 +25,30 @@ jobs:
       matrix:
         build_opts:
           - base_image: devzeroinc/gha-runner-image-ubuntu
-            base_tag: 22.04-devel
+            base_image_tag: 22.04-devel
             build_rule_name: build-ubuntu
             push_rule_name: push-ubuntu
+            out_image_tag: 22.04-devel
           - base_image: devzeroinc/gha-runner-image-ubuntu
-            base_tag: 24.04-devel
+            base_image_tag: 24.04-devel
             build_rule_name: build-ubuntu
             push_rule_name: push-ubuntu
+            out_image_tag: 24.04-devel
+          - base_image: ubuntu
+            base_image_tag: 22.04
+            build_rule_name: build-ubuntu
+            push_rule_name: push-ubuntu
+            out_image_tag: 22.04-docker-devel
+          - base_image: ubuntu
+            base_image_tag: 24.04
+            build_rule_name: build-ubuntu
+            push_rule_name: push-ubuntu
+            out_image_tag: 24.04-docker-devel
           - base_image: amazonlinux
-            base_tag: 2023
+            base_image_tag: 2023
             build_rule_name: build-fedora
             push_rule_name: push-fedora
+            out_image_tag: 2023-devel
     runs-on: ubuntu-xl
     steps:
       - name: Checkout code
@@ -59,7 +72,8 @@ jobs:
         shell: bash
         run: |
           cd images/ubuntu/dockerfiles-scaleset
-          TAG=${{ matrix.build_opts.base_tag }} BASE_IMAGE=${{ matrix.build_opts.base_image }}:${{ matrix.build_opts.base_tag}}
+          export TAG=${{ matrix.build_opts.out_image_tag }}
+          export BASE_IMAGE=${{ matrix.build_opts.base_image }}:${{ matrix.build_opts.base_image_tag}}
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             make ${{ matrix.build_opts.build_rule_name }}
           else

@@ -27,7 +27,6 @@ RUN apt-get update -y \
     vim \
     nano \
     ssh \
-    ssh \
     build-essential \
     htop \
     dnsutils \
@@ -39,20 +38,21 @@ RUN apt-get update -y \
     udev \
     jq
 
-
 # Download latest git-lfs version
 RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && \
     apt-get install -y --no-install-recommends git-lfs
-
-
-# Install from apt package--this may have already been done in base image
-RUN apt install -y docker.io \
-    && systemctl enable docker
 
 RUN adduser --disabled-password --gecos "" --uid $RUNNER_USER_UID runner \
     && usermod -aG sudo runner \
     && echo "%sudo   ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers \
     && echo "Defaults env_keep += \"DEBIAN_FRONTEND\"" >> /etc/sudoers
+
+RUN install -m 0755 -d /etc/apt/keyrings && \
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | tee /etc/apt/keyrings/docker.asc > /dev/null && \
+    chmod a+r /etc/apt/keyrings/docker.asc && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+    $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+    apt-get update -y && apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Create docker group and add runner user to it
 RUN groupadd docker || true \

@@ -20,6 +20,7 @@ RUN dnf update -y \
     vim \
     nano \
     openssh-server \
+    openssh-clients \
     gcc \
     gcc-c++ \
     make \
@@ -34,6 +35,8 @@ RUN dnf update -y \
     jq \
     tar \
     e2fsprogs \
+    shadow-utils \
+    findutils \
     && dnf swap -y curl-minimal curl
 
 # Install Docker
