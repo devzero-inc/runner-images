@@ -115,3 +115,7 @@ STOPSIGNAL SIGRTMIN+3
 ENV DZBOOT_SKIP_PERSIST="1"
 
 COPY ./cache /cache
+COPY docker-image-loader.service /etc/systemd/system/docker-image-loader.service
+COPY docker-image-loader.sh /scripts/docker-image-loader.sh
+
+RUN systemctl enable docker-image-loader
