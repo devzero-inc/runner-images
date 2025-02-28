@@ -1,6 +1,6 @@
 ## ScaleSet Images
 
-These images are built to run as the scale set images for Github Actions Runner Controller. We install some pre-requisites and the runner binary.
+These images are built to run as the scale set images for GitHub Actions Runner Controller. We install some pre-requisites and the runner binary.
 
 ### Building
 
