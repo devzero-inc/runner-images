@@ -30,7 +30,7 @@ define push_image
 	docker push $(DOCKER_REGISTRY)/$(1):$(2)
 endef
 
-.PHONY: build-ubuntu build-fedora build-debian
+.PHONY: build-ubuntu build-fedora build-ubuntu-latest
 build-ubuntu: ## Build the Ubuntu image
 	$(call build_image,$(UBUNTU_IMAGE_NAME),$(BASE_IMAGE),Dockerfile)
 
