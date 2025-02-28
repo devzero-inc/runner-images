@@ -30,12 +30,15 @@ define push_image
 	docker push $(DOCKER_REGISTRY)/$(1):$(2)
 endef
 
-.PHONY: build-ubuntu build-fedora
+.PHONY: build-ubuntu build-fedora build-debian
 build-ubuntu: ## Build the Ubuntu image
 	$(call build_image,$(UBUNTU_IMAGE_NAME),$(BASE_IMAGE),Dockerfile)
 
 build-fedora: ## Build the Fedora (Amazon Linux) image
 	$(call build_image,$(FEDORA_IMAGE_NAME),,Dockerfile.AL23)
+
+build-ubuntu-latest: ## Build using Ubuntu-latest
+	$(call build_image,$(UBUNTU_IMAGE_NAME),ubuntu:latest,Dockerfile)
 
 .PHONY: save-ubuntu save-fedora
 save-ubuntu: build-ubuntu ## Save the Ubuntu image locally

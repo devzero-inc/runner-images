@@ -113,3 +113,5 @@ RUN ln -s /usr/bin/dzcmd /usr/bin/dzboot
 
 STOPSIGNAL SIGRTMIN+3
 ENV DZBOOT_SKIP_PERSIST="1"
+
+COPY ./cache /cache
