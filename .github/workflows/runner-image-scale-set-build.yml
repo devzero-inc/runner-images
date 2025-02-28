@@ -26,16 +26,16 @@ jobs:
         build_opts:
           - base_image: devzeroinc/gha-runner-image-ubuntu
             base_tag: 22.04-devel
-            build_rule_name: build-ubuntu-image
-            push_rule_name: push-ubuntu-image
+            build_rule_name: build-ubuntu
+            push_rule_name: push-ubuntu
           - base_image: devzeroinc/gha-runner-image-ubuntu
             base_tag: 24.04-devel
-            build_rule_name: build-ubuntu-image
-            push_rule_name: push-ubuntu-image
+            build_rule_name: build-ubuntu
+            push_rule_name: push-ubuntu
           - base_image: amazonlinux
             base_tag: 2023
-            build_rule_name: build-fedora-image
-            push_rule_name: push-fedora-image
+            build_rule_name: build-fedora
+            push_rule_name: push-fedora
     runs-on: ubuntu-xl
     steps:
       - name: Checkout code
