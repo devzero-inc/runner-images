@@ -46,7 +46,9 @@ RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.d
 
 
 # Install from apt package--this may have already been done in base image
-RUN apt install -y docker.io
+RUN apt install -y docker.io \
+    && systemctl enable docker
+
 
 RUN adduser --disabled-password --gecos "" --uid $RUNNER_USER_UID runner \
     && usermod -aG sudo runner \
