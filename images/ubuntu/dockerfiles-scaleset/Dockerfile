@@ -104,9 +104,9 @@ RUN echo ${CACHEBUST}
 ENV CACHEBUST=${CACHEBUST}
 
 ARG DZ_TAR=dz.tar.gz
-RUN wget -O $(DZ_TAR) https://get.devzero.io/stable/linux-$(ARCH)/dz.tar.gz \
-    && tar -xzf $(DZ_TAR) \
-    && rm -rf $(DZ_TAR) \
+RUN wget -O ${DZ_TAR} https://get.devzero.io/stable/linux-${ARCH}/dz.tar.gz \
+    && tar -xzf ${DZ_TAR} \
+    && rm -rf ${DZ_TAR} \
     && mv dzcmd /usr/bin
 RUN chmod +x /usr/bin/dzcmd
 RUN ln -s /usr/bin/dzcmd /usr/bin/dzboot
