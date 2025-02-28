@@ -49,7 +49,6 @@ RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.d
 RUN apt install -y docker.io \
     && systemctl enable docker
 
-
 RUN adduser --disabled-password --gecos "" --uid $RUNNER_USER_UID runner \
     && usermod -aG sudo runner \
     && echo "%sudo   ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers \
