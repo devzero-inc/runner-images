@@ -1,7 +1,7 @@
 #!/bin/bash
-
 # Script to load Docker images from a directory with timing information
-IMAGE_DIR="/cache"
+
+IMAGE_DIR="/image-cache"
 
 echo "Starting Docker image loading"
 

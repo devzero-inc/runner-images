@@ -45,6 +45,7 @@ RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.d
     apt-get install -y --no-install-recommends git-lfs
 
 
+# Install from apt package--this may have already been done in base image
 RUN apt install -y docker.io
 
 RUN adduser --disabled-password --gecos "" --uid $RUNNER_USER_UID runner \
@@ -117,7 +118,7 @@ RUN ln -s /usr/bin/dzcmd /usr/bin/dzboot
 STOPSIGNAL SIGRTMIN+3
 ENV DZBOOT_SKIP_PERSIST="1"
 
-COPY ./cache /cache
+COPY ./image-cache /image-cache
 COPY docker-image-loader.service /etc/systemd/system/docker-image-loader.service
 COPY docker-image-loader.sh /scripts/docker-image-loader.sh
 
