@@ -39,17 +39,17 @@ RUN dnf update -y \
     findutils \
     && dnf swap -y curl-minimal curl
 
-# Install Docker
-RUN dnf install -y docker \
-    && systemctl enable docker
-
 # Install latest git-lfs
-RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh | bash && \
-    dnf install -y git-lfs
+RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh | bash \
+    && dnf install -y git-lfs
 
 RUN adduser --uid $RUNNER_USER_UID runner \
     && usermod -aG wheel runner \
     && echo "%wheel   ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Install Docker
+RUN yum update -y \
+    && yum install -y docker
 
 # Create docker group and add runner user to it
 RUN groupadd docker || true \

@@ -48,7 +48,7 @@ jobs:
             base_image_tag: 2023
             build_rule_name: build-fedora
             push_rule_name: push-fedora
-            out_image_tag: 2023-devel
+            out_image_tag: 2023-docker-devel
     runs-on: ubuntu-xl
     steps:
       - name: Checkout code
