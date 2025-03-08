@@ -48,12 +48,14 @@ RUN adduser --uid $RUNNER_USER_UID runner \
     && echo "%wheel   ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Install Docker
-RUN yum update -y \
-    && yum install -y docker
+RUN dnf -y update && dnf -y install docker
 
 # Create docker group and add runner user to it
 RUN groupadd docker || true \
     && usermod -aG docker runner
+
+# networkd hanging on startup so manually disabling
+RUN systemctl disable systemd-networkd-wait-online.service
 
 # Enable SSH service
 RUN systemctl enable sshd
