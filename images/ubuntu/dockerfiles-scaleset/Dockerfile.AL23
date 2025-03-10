@@ -57,6 +57,9 @@ RUN groupadd docker || true \
 # networkd hanging on startup so manually disabling
 RUN systemctl disable systemd-networkd-wait-online.service
 
+# enable docker
+RUN systemctl enable docker
+
 # Enable SSH service
 RUN systemctl enable sshd
 
