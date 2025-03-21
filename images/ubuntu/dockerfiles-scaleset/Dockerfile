@@ -3,7 +3,7 @@ ARG BASE_IMAGE=devzeroinc/gha-runner-image-ubuntu:22.04-devel
 FROM ${BASE_IMAGE} AS initial
 
 ARG ARCH=amd64
-ARG RUNNER_VERSION=2.322.0
+ARG RUNNER_VERSION=2.323.0
 ARG RUNNER_USER_UID=1001
 
 ENV DEBIAN_FRONTEND=noninteractive
