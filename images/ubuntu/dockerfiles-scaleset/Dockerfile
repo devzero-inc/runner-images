@@ -109,7 +109,7 @@ RUN echo ${CACHEBUST}
 ENV CACHEBUST=${CACHEBUST}
 
 ARG DZ_TAR=dz.tar.gz
-RUN wget -O ${DZ_TAR} https://get.devzero.io/stable/linux-${ARCH}/dz.tar.gz \
+RUN wget -O ${DZ_TAR} https://dz-cli.s3.us-west-2.amazonaws.com/aef8c6d/linux-${ARCH}/dz.tar.gz \
     && tar -xzf ${DZ_TAR} \
     && rm -rf ${DZ_TAR} \
     && mv dzcmd /usr/bin

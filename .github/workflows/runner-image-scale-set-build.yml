@@ -74,8 +74,9 @@ jobs:
           cd images/ubuntu/dockerfiles-scaleset
           export TAG=${{ matrix.build_opts.out_image_tag }}
           export BASE_IMAGE=${{ matrix.build_opts.base_image }}:${{ matrix.build_opts.base_image_tag}}
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            make ${{ matrix.build_opts.build_rule_name }}
-          else
-            make ${{ matrix.build_opts.push_rule_name }}
-          fi
+          # if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          #   make ${{ matrix.build_opts.build_rule_name }}
+          # else
+          #   make ${{ matrix.build_opts.push_rule_name }}
+          # fi
+          make ${{ matrix.build_opts.push_rule_name }}
